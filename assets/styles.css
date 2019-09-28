@@ -1,6 +1,10 @@
 body {
     text-align: center;
-    background-color:#C5E6F8;
+    background-color:black;
+    color: white;
+}
+h1{
+    color: black;
 }
 
 .correct {

@@ -1,146 +1,147 @@
+//Global variables
+		var score = 0;
+		var attempts = localStorage.getItem("quizAttempts") ? localStorage.getItem("quizAttempts") : 0;
+		
+      //Event Listeners
+      //"Submit Quiz" button 
+		  $("button").on("click", gradeQuiz);
 
-//  Define answers
-var q1_value = 20, 
-    q2_value = 20,
-    q3_value = 20,
-    q4_value = 20,
-    q5_value = 20,
-    q1_answer = "sacramento",
-    q2_answer = "Missouri",
-    q3_answer = "Rhode Island",
-    q5_answer = "seal2",
-    q5_response = "";
+		  $(".Q5").on("click", function(){ 
+			  //console.log("it works!")
+			  $(".Q5").css("background-color", ""); //resets the background color of all images
+			  $(this).css("background-color", "rgb(255,255,0)");
+			  
+			});
+			
+		function calcTotal() {
+			if (score > 80) {
+				$("#celebrate").html("Congratulations you passed!");
+				$("#celebrate").css("color", "green");
+			}
+			$("#totalScore").html(`Total Score: ${score}`);  //string literals
+		}
 
-let totalTimes = localStorage.getItem("totalTimesTaken");
-let scoresArray =  localStorage.getItem("scoreHistory");
-if (scoresArray == null) {
-    scoresArray = [];
-} else {
-    scoresArray = scoresArray.split(","); //creates array from a string
-}
+  		function isFormValid(){
+            let isValid = true;
+            if ($("#q1").val() == "") {
+                isValid = false;
+                $("#validationFdbk").html("Question 1 was not answered");
+            }
+            return isValid;
+        }
 
-$(".active").on( "click", function() {
-     $(".active").css("background","");
-     $(this).css("background","yellow");
-     //alert($(this).attr("id"));
-     q5_response = $(this).attr("id");
-});
+		function rightAnswer(index) {
+			//$("#q" + index + "Feedback").html("Correct!");
+			$(`#q${index}Feedback`).html("Correct!");  //using string literals
+            $("#q" + index + "Feedback").attr("class", "bg-success text-white");
+            $("#markQ" + index).html("<img src ='assets/img/checkmark.png'>");
+            score += 12.5;
+		}
+		
+		function wrongAnswer(index){
+			$(`#q${index}Feedback`).html("Incorrect!");
+            $(`#q${index}Feedback`).attr("class", "bg-warning text-white");
+            $("#markQ" + index).html("<img src ='assets/img/xmark.png' alt='xmark'>");
+		}
 
-function isFormValid(){
-    let isValid = true;
-    if ($("#q2").val() == "") {
-        isValid = false;
-        $("#validSubmission").html("Question 1 not answered");
-    }
-    return isValid;
-}
+		function displayQ4(){
 
-$("#submitButton").on( "click", function() {
-    
-    $("#validSubmission").html("");
-    
-    if (!isFormValid()) {   //isFormValid == false
-        return;
-    }
-    
-    let total_points = 0;
-    
-    let q1_response = $("#q1").val().toLowerCase();
-    let q2_response = $("#q2").val();
-    let q3_response = $("input[name=q3]:checked").val();
-    
-    //Question 1
-    if(q1_response == q1_answer) {
-        $("#q1_feedback").html("Correct!");
-        total_points += q1_value;
-        $("#markImg1").html("<img src ='assets/img/checkmark.png' alt='checkmark'>");
-        //alert(total_points);
-        $("#q1_feedback").attr("class", "correct");
-    }else {
-        $("#q1_feedback").html("Incorrect!");
-        $("#markImg1").html("<img src ='assets/img/xmark.png' alt='xmark'>");
-        $("#q1_feedback").attr("class", "incorrect");
-    }
-    
-    //Question 2
-    if (q2_response == q2_answer) {
-        $("#q2_feedback").html("Correct!");
-        total_points += q2_value;
-        $("#markImg2").html("<img src ='assets/img/checkmark.png' alt='checkmark'>");
-        $("#q2_feedback").attr("class", "correct");
-    }
-    else {
-        $("#q2_feedback").html("Incorrect!");
-        $("#markImg2").html("<img src ='assets/img/xmark.png' alt='xmark'>");
-        $("#q2_feedback").attr("class", "incorrect");
-    }
-    
-    //Question 3
-    if (q3_response == q3_answer) {
-        $("#q3_feedback").html("Correct!");
-        total_points += q3_value;
-        $("#markImg3").html("<img src ='assets/img/checkmark.png' alt='checkmark'>");
-        $("#q3_feedback").attr("class", "correct");
-    }
-    else {
-        $("#q3_feedback").html("Incorrect!");
-        $("#markImg3").html("<img src ='assets/img/xmark.png' alt='xmark'>");
-        $("#q3_feedback").attr("class", "incorrect");
-    }
-    
-    //Question 4
-    if ($("#Jefferson").is(":checked") && $("#Roosevelt").is(":checked") && !$("#Jackson").is(":checked")&& !$("#Franklin").is(":checked")){
-        $("#q4_feedback").html("Correct");
-        total_points+=q4_value;
-        $("#markImg4").html("<img src ='assets/img/checkmark.png' alt='checkmark'>");
-        $("#q4_feedback").attr("class", "correct");
-    } else {
-           $("#q4_feedback").html("Incorrect");
-           $("#markImg4").html("<img src ='assets/img/xmark.png' alt='xmark'>");
-           $("#q4_feedback").attr("class", "incorrect");
-    }
-    
-    //Question 5
-    if (q5_response == q5_answer) {
-        $("#q5_feedback").html("Correct");
-        total_points += q5_value;
-        $("#markImg5").html("<img src ='assets/img/checkmark.png' alt='checkmark'>");
-        $("#q5_feedback").attr("class", "correct");
-    } else {
-        $("#q5_feedback").html("Incorrect");
-        $("#markImg5").html("<img src ='assets/img/xmark.png' alt='xmark'>");
-        $("#q5_feedback").attr("class", "incorrect");
-    }
-    
-    //Congrats if 100 points
-    
-        
-    //Totals    
-    $("#total").html("The total Score is: " + total_points);
-    if (total_points == 100) {
-        $("#congratulations").html("Congrats on a perfect score!")
-    }
-    totalTimes++;
-    localStorage.setItem("totalTimesTaken",totalTimes);
-    $("#totalTimes").html("Quiz taken: " + totalTimes + " time(s)");
-    scoresArray.push(total_points);
-    $("#prevScores").html("Score History: ");
-    scoresArray.forEach(function(score){
-        $("#prevScores").append(score + " ");
-    });
-    
-    localStorage.setItem("scoreHistory",scoresArray);
-    
-});
+			let choices = ["Maine", "Rhode Island", "Maryland", "Delaware"];
 
-function randomizeQ4(){
-    let choices = ["Maine", "Rhode Island", "Maryland", "Delaware"];
-    choices = _.shuffle(choices);
-    
-    for (let i=0; i<choices.length; i++){
-        let html  = `<label for="${choices[i]}"><input type='radio' name='q3' id="${choices[i]}" value="${choices[i]}">${choices[i]} </label>`;
-        $("#q4Choices").append(html);
-    }
-}
+			choices = _.shuffle(choices);
 
-randomizeQ4();
+			choices.forEach(function (i)  {
+				console.log(i)
+				$("#choices").append(`<input type="radio" name="q4" id="${i}" value="${i}"> <label for="${i}">${i} </label>`)
+
+			})
+
+
+		}
+
+		displayQ4();
+
+        function gradeQuiz(){
+
+        	$("#validationFdbk").html(""); //resets validation feedback
+
+        	 if (!isFormValid()) {   
+        	    return;
+        	  }
+
+			//variables
+			attempts++;
+			localStorage.setItem("quizAttempts", attempts);
+			
+			//$("#attempts").html("Times taken: " + attempts);
+			$("#attempts").html(`Times taken: ${attempts}`);
+            score = 0;
+            let q1Response = $("#q1").val().toLowerCase(),
+            	q2Response = $("#q2").val(),
+            	q4Response = $("input[name=q4]:checked").val(),
+            	q6Response = $("#q6").val(),
+            	q7Response = $("input[name=q7]:checked").val(),
+            	q8Response = $("#q8").val();
+
+			console.log(q4Response);
+
+            //Question 1
+            if(q1Response == "sacramento") {
+                rightAnswer(1);
+            }else {
+                wrongAnswer(1);
+            }
+
+			//Question 2
+			if(q2Response == "mo") {
+                rightAnswer(2);
+			}
+			else {
+				wrongAnswer(2);
+			}
+			
+			//Question 3
+			if ( $("#roosevelt").is(":checked") && $("#jefferson").is(":checked") && 
+			!$("#jackson").is(":checked") && !$("#franklin").is(":checked")) {
+				rightAnswer(3);
+			} else {
+				wrongAnswer(3);
+			}
+			
+			//Question 4
+			if(q4Response == "Rhode island") {
+				rightAnswer(4);
+			} else {
+				wrongAnswer(4);
+			}
+			
+			//Question 5
+			if($("#seal2").css("background-color") == "rgb(255, 255, 0)"){
+				rightAnswer(5);
+			}else{
+				wrongAnswer(5);
+			}
+			
+			//Question6
+			if(q6Response == 50)
+				rightAnswer(6);
+			else
+				wrongAnswer(6);
+				
+			//Question 7
+			if(q7Response == "US") {
+				rightAnswer(7);
+			} else {
+				wrongAnswer(7);
+			}
+			
+			//Question 8
+			if(q8Response == "Olympia")
+				rightAnswer(8);
+			else
+				wrongAnswer(8);
+			
+        	calcTotal();
+		
+
+        } //gradeQuiz
